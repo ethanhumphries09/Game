@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36623.8 d17.14
+VisualStudioVersion = 17.14.36623.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGame.Android", "MyGame.Android\MyGame.Android.csproj", "{EAB2E34C-BD0B-45A0-89AA-8CC8DB8597FA}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGame.DesktopGL", "MyGame.DesktopGL\MyGame.DesktopGL.csproj", "{D9183B7E-4CFD-4A57-A198-1DB16530F5E2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGame.iOS", "MyGame.iOS\MyGame.iOS.csproj", "{ED4DF8E6-D485-47D5-B568-63BBED654533}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Engine", "Engine\Engine.shproj", "{A0CDBD0E-3A41-42B7-9425-A838BC2C7383}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,5 +45,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {78FA61BB-625F-4614-8059-2CDEA5A9D1E8}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Engine\Engine.projitems*{9ca7b663-646f-4d16-9260-21991af7d34b}*SharedItemsImports = 5
+		Engine\Engine.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

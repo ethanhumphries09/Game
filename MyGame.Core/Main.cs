@@ -1,15 +1,19 @@
-using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+global using System;
+global using System.Collections.Generic;
+global using Microsoft.Xna.Framework;
+global using Microsoft.Xna.Framework.Graphics;
+global using Microsoft.Xna.Framework.Input;
+using Engine;
+using Engine.Components;
 
 namespace MyGame.Core;
-
 public class Main : Game
 {
     // Resources for drawing.
-    private GraphicsDeviceManager _graphics;
+    private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+
+    private GameObject gameObject;
 
     public readonly static bool IsMobile = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
     public readonly static bool IsDesktop = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() || OperatingSystem.IsWindows();
@@ -17,10 +21,9 @@ public class Main : Game
     public Main()
     {
         _graphics = new GraphicsDeviceManager(this);
-        
-        // Share GraphicsDeviceManager as a service.
-        Services.AddService<GraphicsDeviceManager>(_graphics);
-        
+
+        // Share GraphicsDeviceManager as a service
+
 
         Content.RootDirectory = "Content";
 
@@ -41,8 +44,12 @@ public class Main : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        Services.AddService<SpriteBatch>(_spriteBatch);
 
+        gameObject = new GameObject(position: new Vector2(100, 100))
+        {
+            new Sprite(Content.Load<Texture2D>("Player")),
+            new Movement()
+        };
 
         base.LoadContent();
     }
@@ -54,7 +61,8 @@ public class Main : Game
             || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // TODO: Add your update logic here
+        // TODO: Add your update logic 
+        gameObject.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -64,10 +72,9 @@ public class Main : Game
         // Clears the screen with the MonoGame orange color before drawing.
         GraphicsDevice.Clear(Color.MonoGameOrange);
 
-        _spriteBatch.Begin();
+        _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack);
 
-        _spriteBatch.Draw(Content.Load<Texture2D>("Player"), new Vector2(100, 100), Color.White);
-
+        gameObject.Draw(_spriteBatch);
 
 
 
