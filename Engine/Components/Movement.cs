@@ -2,7 +2,7 @@
 public class Movement : Component
 {
     KeyboardState kb;
-    float speed = 200f;
+    readonly float speed = 200f;
     public override void Update(GameTime gameTime)
     {
         kb = Keyboard.GetState();

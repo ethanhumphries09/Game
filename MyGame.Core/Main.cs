@@ -1,4 +1,5 @@
 global using System;
+global using System.Linq;
 global using System.Collections.Generic;
 global using Microsoft.Xna.Framework;
 global using Microsoft.Xna.Framework.Graphics;
@@ -13,7 +14,9 @@ public class Main : Game
     private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
-    private GameObject gameObject;
+    private Player player;
+    private GameObject testobj;
+    public List<GameObject> Objects;
 
     public readonly static bool IsMobile = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
     public readonly static bool IsDesktop = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() || OperatingSystem.IsWindows();
@@ -45,12 +48,20 @@ public class Main : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        gameObject = new GameObject(position: new Vector2(100, 100))
+        Objects = new List<GameObject>();
+        player = new Player(position: new Vector2(100, 100))
         {
             new Sprite(Content.Load<Texture2D>("Player")),
-            new Movement()
+            new Movement(),
+            new Collider()
         };
-
+        testobj = new GameObject(position: new Vector2(200, 200))
+        {
+            new Sprite(Content.Load<Texture2D>("Player")),
+            new Collider()
+        };
+        Objects.Add(testobj);
+        Objects.Add(player);
         base.LoadContent();
     }
 
@@ -62,7 +73,8 @@ public class Main : Game
             Exit();
 
         // TODO: Add your update logic 
-        gameObject.Update(gameTime);
+        player.Update(gameTime);
+        
 
         base.Update(gameTime);
     }
@@ -74,10 +86,10 @@ public class Main : Game
 
         _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack);
 
-        gameObject.Draw(_spriteBatch);
+        player.Draw(_spriteBatch);
 
 
-
+        player.Debug(_spriteBatch, GraphicsDevice);
         _spriteBatch.End();
 
         base.Draw(gameTime);

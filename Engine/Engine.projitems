@@ -12,9 +12,15 @@
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Components\Collider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Component.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Movement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Sprite.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objects\Player.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Physics\Collision.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Objects\" />
   </ItemGroup>
 </Project>
