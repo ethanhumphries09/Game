@@ -14,7 +14,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Components\Collider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Component.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components\Movement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Objects\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Sprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Objects\Player.cs" />

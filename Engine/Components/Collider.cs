@@ -1,10 +1,9 @@
-﻿using Engine.Physics;
+﻿namespace Engine.Components;
 
-namespace Engine.Components;
 public class Collider : Component
 {
     private Point Size { get; set; } = Point.Zero;
-    private Point Offset { get; set; }
+
 
     public Rectangle Bounds
     {
@@ -22,10 +21,10 @@ public class Collider : Component
                 }
             }
 
-            Vector2 worldPos = Parent.Position + Offset.ToVector2();
+
             return new Rectangle(
-                (int)worldPos.X,    // X position
-                (int)worldPos.Y,    // Y position
+                (int)Parent.Position.X,    // X position
+                (int)Parent.Position.Y,    // Y position
                 size.X,             // Width
                 size.Y              // Height
             );
@@ -34,21 +33,16 @@ public class Collider : Component
 
     public Collider()
     {
-       // Collision.Colliders.Add(this);
-    }
-
-
-    public Collider(Point size, Point offset) : this()
-    {
-        Size = size;
-        Offset = offset;
         Collision.Colliders.Add(this);
     }
 
-    public override void Debug(SpriteBatch spriteBatch, GraphicsDevice graphics)
+
+
+
+    public override void Draw(SpriteBatch spriteBatch)
     {
         Texture2D pixel;
-        pixel = new Texture2D(graphics, 1, 1);
+        pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
         pixel.SetData([Color.White]);
         // Top
         spriteBatch.Draw(pixel, new Rectangle(Bounds.X, Bounds.Y, Bounds.Width, 1), Color.White);

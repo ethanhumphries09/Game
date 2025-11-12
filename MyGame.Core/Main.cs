@@ -1,21 +1,12 @@
-global using System;
-global using System.Linq;
-global using System.Collections.Generic;
-global using Microsoft.Xna.Framework;
-global using Microsoft.Xna.Framework.Graphics;
-global using Microsoft.Xna.Framework.Input;
-using Engine;
-using Engine.Components;
-
 namespace MyGame.Core;
+
 public class Main : Game
 {
     // Resources for drawing.
     private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
-    private Player player;
-    private GameObject testobj;
+
     public List<GameObject> Objects;
 
     public readonly static bool IsMobile = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
@@ -48,21 +39,26 @@ public class Main : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        Objects = new List<GameObject>();
-        player = new Player(position: new Vector2(100, 100))
+        Objects = new List<GameObject>()
         {
-            new Sprite(Content.Load<Texture2D>("Player")),
-            new Movement(),
-            new Collider()
+            new Player(name: "player", position: new Vector2(100, 100))
+            {
+                new Sprite(Content.Load<Texture2D>("Player")),
+                new Collider()
+            },
+            new GameObject(name: "test1",position: new Vector2(200, 200))
+            {
+                new Sprite(Content.Load<Texture2D>("Player")),
+                new Collider()
+            },
+            new GameObject(name: "test2" ,position: new Vector2(250, 250))
+            {
+                new Sprite(Content.Load<Texture2D>("Player")),
+                new Collider()
+            }
         };
-        testobj = new GameObject(position: new Vector2(200, 200))
-        {
-            new Sprite(Content.Load<Texture2D>("Player")),
-            new Collider()
-        };
-        Objects.Add(testobj);
-        Objects.Add(player);
         base.LoadContent();
+
     }
 
     protected override void Update(GameTime gameTime)
@@ -73,8 +69,11 @@ public class Main : Game
             Exit();
 
         // TODO: Add your update logic 
-        player.Update(gameTime);
-        
+        foreach (var obj in Objects)
+        {
+            obj.Update(gameTime);
+        }
+        Collision.Collide();
 
         base.Update(gameTime);
     }
@@ -84,12 +83,19 @@ public class Main : Game
         // Clears the screen with the MonoGame orange color before drawing.
         GraphicsDevice.Clear(Color.MonoGameOrange);
 
-        _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack);
+        _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack, samplerState: SamplerState.PointClamp);
 
-        player.Draw(_spriteBatch);
+        foreach (var obj in Objects)
+        {
+            obj.Draw(_spriteBatch);
+        }
+
+        foreach (var obj in Objects)
+        {
+           // obj.Debug(_spriteBatch, GraphicsDevice);
+        }
 
 
-        player.Debug(_spriteBatch, GraphicsDevice);
         _spriteBatch.End();
 
         base.Draw(gameTime);
