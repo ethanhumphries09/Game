@@ -44,12 +44,17 @@ public class Main : Game
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider(size: new Point(32, 32), offset: new Point(0,32) ),
             },
-            new GameObject(name: "test1",position: new Vector2(200, 200))
+            new GameObject(name: "test1",position: new Vector2(200, 400))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
             },
-            new GameObject(name: "test2" ,position: new Vector2(250, 250))
+            new GameObject(name: "test2" ,position: new Vector2(250, 350))
+            {
+                new Sprite(Content.Load<Texture2D>("Player")),
+                new Collider()
+            },
+            new GameObject(name: "test3" ,position: new Vector2(100, 400))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
