@@ -4,6 +4,7 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
 {
     KeyboardState kb;
     readonly float speed = 200f;
+    private Vector2 velocity = Vector2.Zero;
     public override void Update(GameTime gameTime)
     {
         base.Update(gameTime);
@@ -14,21 +15,32 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
     private void Move(GameTime gameTime)
     {
         float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Vector2 movement = Vector2.Zero;
+        velocity = Vector2.Zero;
 
-        if (kb.IsKeyDown(Keys.W))
-            movement.Y -= 1;
-        if (kb.IsKeyDown(Keys.S))
-            movement.Y += 1;
-        if (kb.IsKeyDown(Keys.A))
-            movement.X -= 1;
-        if (kb.IsKeyDown(Keys.D))
-            movement.X += 1;
+        if (kb.IsKeyDown(Keys.W)) velocity.Y -= 1;
+        if (kb.IsKeyDown(Keys.S)) velocity.Y += 1;
+        if (kb.IsKeyDown(Keys.A)) velocity.X -= 1;
+        if (kb.IsKeyDown(Keys.D)) velocity.X += 1;
 
-        if (movement != Vector2.Zero)
-            movement.Normalize();
+        if (velocity != Vector2.Zero)
+            velocity.Normalize();
 
-        Position += movement * speed * delta;
+        float moveX = velocity.X * speed * delta;
+        float moveY = velocity.Y * speed * delta;
+
+        
+        // Optional jump (if grounded)
+        if (kb.IsKeyDown(Keys.Space))
+        {
+            velocity.Y = -400f; // jump impulse
+            
+        }
+
+        Position = new Vector2(Position.X + moveX, Position.Y);
+        Collision.CollideX();
+
+        Position = new Vector2(Position.X, Position.Y + moveY);
+        Collision.CollideY();
     }
 }
 

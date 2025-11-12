@@ -16,8 +16,6 @@ public class Main : Game
     {
         _graphics = new GraphicsDeviceManager(this);
 
-        // Share GraphicsDeviceManager as a service
-
 
         Content.RootDirectory = "Content";
 
@@ -44,7 +42,7 @@ public class Main : Game
             new Player(name: "player", position: new Vector2(100, 100))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
-                new Collider()
+                new Collider(size: new Point(32, 32), offset: new Point(0,32) ),
             },
             new GameObject(name: "test1",position: new Vector2(200, 200))
             {
@@ -73,8 +71,7 @@ public class Main : Game
         {
             obj.Update(gameTime);
         }
-        Collision.Collide();
-
+        
         base.Update(gameTime);
     }
 
@@ -90,10 +87,6 @@ public class Main : Game
             obj.Draw(_spriteBatch);
         }
 
-        foreach (var obj in Objects)
-        {
-           // obj.Debug(_spriteBatch, GraphicsDevice);
-        }
 
 
         _spriteBatch.End();

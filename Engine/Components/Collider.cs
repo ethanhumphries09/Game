@@ -3,7 +3,7 @@
 public class Collider : Component
 {
     private Point Size { get; set; } = Point.Zero;
-
+    public Point Offset { get; private set; } = Point.Zero;
 
     public Rectangle Bounds
     {
@@ -23,8 +23,8 @@ public class Collider : Component
 
 
             return new Rectangle(
-                (int)Parent.Position.X,    // X position
-                (int)Parent.Position.Y,    // Y position
+                (int)Parent.Position.X+Offset.X,    // X position
+                (int)Parent.Position.Y+Offset.Y,    // Y position
                 size.X,             // Width
                 size.Y              // Height
             );
@@ -36,6 +36,12 @@ public class Collider : Component
         Collision.Colliders.Add(this);
     }
 
+    public Collider(Point size, Point offset)
+    {
+        Size = size;
+        Offset = offset;
+        Collision.Colliders.Add(this);
+    }
 
 
 
