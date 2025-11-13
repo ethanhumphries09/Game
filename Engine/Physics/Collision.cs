@@ -3,7 +3,7 @@
 namespace Engine.Physics;
 public class Collision
 {
-    public static List<Collider> Colliders { get; } = new();
+    public static List<Collider> Colliders { get; } = [];
 
     public static void CollideX()
     {

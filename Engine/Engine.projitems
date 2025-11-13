@@ -19,7 +19,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)Objects\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Physics\Collision.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Objects\" />
-  </ItemGroup>
 </Project>

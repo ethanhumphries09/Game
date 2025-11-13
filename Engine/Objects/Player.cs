@@ -1,87 +1,202 @@
 ﻿using Engine.Components;
+using System.Diagnostics;
 
 namespace Engine;
 
 public class Player(string name, Vector2 position) : GameObject(name, position)
 {
-    KeyboardState kb;
-    KeyboardState kbp;
-    readonly float speed = 200f;
+    private KeyboardState kb;
+    private KeyboardState kbp;
+
     private Vector2 Velocity = Vector2.Zero;
-    private float gravity = 200f;
-    public bool Grounded { get; set; } = false;
-    private Collider collider => GetComponent<Collider>();
+
+    private const float speed = 200;
+    private const float acceleration = 10f;
+    private const float jump = 15f;
+    private const float gravity = 50f;
+    private const float terminalVelocity = 1000f;
+
+    private int maxJumps = 2;
+    private int jumps;
+
+    //private bool canJump;
+
+    private Collider Collider => GetComponent<Collider>();
+    private Rectangle PreviousBounds = Rectangle.Empty;
+    private Rectangle GroundedBox;
+
+    public bool Grounded()
+    {
+        GroundedBox = new Rectangle(
+            Collider.Bounds.X,
+            Collider.Bounds.Bottom + 1,
+            Collider.Bounds.Width,
+            1
+        );
+        foreach (var collider in Collision.Colliders)
+        {
+            if (GroundedBox.Intersects(collider.Bounds))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public override void Draw(SpriteBatch spriteBatch)
+    {
+
+        base.Draw(spriteBatch);
+        spriteBatch.Draw(MyGame.Core.Main.pixel, GroundedBox, Color.Blue);
+
+    }
     public override void Update(GameTime gameTime)
     {
         base.Update(gameTime);
         kbp = kb;
         kb = Keyboard.GetState();
+
+        PreviousBounds = Collider.Bounds;
         Move(gameTime);
+
     }
     private void Move(GameTime gameTime)
     {
         float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Velocity.X = 0;
 
-        if (Grounded)
+
+        float targetSpeed = 0f;
+
+        bool left = kb.IsKeyDown(Keys.A);
+        bool right = kb.IsKeyDown(Keys.D);
+
+        if (left && !right)
+            targetSpeed = -speed * delta;
+        else if (right && !left)
+            targetSpeed = speed * delta;
+
+        Velocity.X = MathHelper.Lerp(Velocity.X, targetSpeed, acceleration * delta);
+
+        //not grounded
+        if (!Grounded())
+        {
+            if (Velocity.Y < terminalVelocity * delta)
+            {
+                Velocity.Y += gravity * delta;
+            }
+            else if (Velocity.Y > terminalVelocity * delta)
+            {
+                Velocity.Y = terminalVelocity * delta;
+            }
+
+            if(jumps == maxJumps)
+            {
+                jumps--;
+            }
+        }
+        //grounded
+        else
         {
             Velocity.Y = 0;
+            jumps = maxJumps;
         }
 
-        if (kb.IsKeyDown(Keys.A)) Velocity.X -= speed * delta;
-        if (kb.IsKeyDown(Keys.D)) Velocity.X += speed * delta;
-
-        if (!Grounded && Velocity.Y < gravity)
-            Velocity.Y += (gravity / 10) * delta;
-
-        float moveX = Velocity.X;
-        float moveY = Velocity.Y;
-
-
-        if (Grounded && kb.IsKeyDown(Keys.Space) && !kbp.IsKeyDown(Keys.Space))
+        //jump
+        if (jumps >= 1 && kb.IsKeyDown(Keys.Space) && !kbp.IsKeyDown(Keys.Space))
         {
-            Grounded = false;
-            Velocity.Y = -10; // jump impulse
-
+            Jump();
         }
 
-        Position = new Vector2(Position.X + moveX, Position.Y);
-        CollideX();
+        //dash
+        if (kb.IsKeyDown(Keys.LeftShift) && !kbp.IsKeyDown(Keys.LeftShift))
+        {
+            Dash();
+        }
 
-        Position = new Vector2(Position.X, Position.Y + moveY);
-        CollideY();
+        //move and collide
+        Position = new Vector2(Position.X + Velocity.X, Position.Y);
+        if (Position.X != PreviousPosition.X)
+            CollideX();
+
+        Position = new Vector2(Position.X, Position.Y + Velocity.Y);
+        if (Position.Y != PreviousPosition.Y)
+            CollideY();
+
     }
     public void CollideX()
     {
         foreach (var collider2 in Collision.Colliders)
         {
-            if (collider != collider2)
+            if (Collider != collider2)
             {
-                if (collider.Bounds.Intersects(collider2.Bounds))
+                if (Collider.Bounds.Intersects(collider2.Bounds))
                 {
-                    collider.Parent.Position = new(collider.Parent.PreviousPosition.X, collider.Parent.Position.Y);
-                }
-            }
-        }
-    }
-    
-    public void CollideY()
-    {
-        foreach (var collider2 in Collision.Colliders)
-        {
-            if (collider != collider2)
-            {
-                if (collider.Bounds.Intersects(collider2.Bounds))
-                {
-                    collider.Parent.Position = new(collider.Parent.Position.X, collider.Parent.PreviousPosition.Y);
-                    if (Velocity.Y > 0.0f)
+                    //right side
+                    if (PreviousBounds.Left >= collider2.Bounds.Right)
                     {
-                        Grounded = true;
+                        Position = new(collider2.Bounds.Right, Position.Y);
+
+                        Velocity.X = 0;
+
+                    }
+                    //left side
+                    else if (PreviousBounds.Right <= collider2.Bounds.Left)
+                    {
+
+                        Position = new(collider2.Bounds.Left - Collider.Bounds.Width, Position.Y);
+
+                        Velocity.X = 0;
+
                     }
                 }
             }
         }
     }
-}
 
+    public void CollideY()
+    {
+        foreach (var collider2 in Collision.Colliders)
+        {
+            if (Collider != collider2)
+            {
+                if (Collider.Bounds.Intersects(collider2.Bounds))
+                {
+                    //top
+                    if (PreviousBounds.Bottom <= collider2.Bounds.Top)
+                    {
+                        Position = new(Position.X, collider2.Bounds.Top - Collider.Bounds.Height - Collider.Offset.Y);
+
+
+                    }
+                    //bottom
+                    else if (PreviousBounds.Top >= collider2.Bounds.Bottom)
+                    {
+                        Position = new(Position.X, collider2.Bounds.Bottom - Collider.Bounds.Height);
+
+                        Velocity.Y = 0;
+
+                    }
+                }
+            }
+        }
+    }
+    public void Dash()
+    {
+        if (Velocity.X > 0)
+        {
+            Velocity.Y = 0;
+            Velocity.X += 30;
+        }
+        else if (Velocity.X < 0)
+        {
+            Velocity.Y = 0;
+            Velocity.X -= 30;
+        }
+    }
+    public void Jump()
+    {
+        Velocity.Y = -jump;
+        jumps--;
+    }
+}
 

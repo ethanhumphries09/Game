@@ -47,17 +47,15 @@ public class Collider : Component
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        Texture2D pixel;
-        pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-        pixel.SetData([Color.White]);
+        
         // Top
-        spriteBatch.Draw(pixel, new Rectangle(Bounds.X, Bounds.Y, Bounds.Width, 1), Color.White);
+        spriteBatch.Draw(MyGame.Core.Main.pixel, new Rectangle(Bounds.X, Bounds.Y, Bounds.Width, 1), Color.White);
         // Bottom
-        spriteBatch.Draw(pixel, new Rectangle(Bounds.X, Bounds.Bottom - 1, Bounds.Width, 1), Color.White);
+        spriteBatch.Draw(MyGame.Core.Main.pixel, new Rectangle(Bounds.X, Bounds.Bottom - 1, Bounds.Width, 1), Color.White);
         // Left
-        spriteBatch.Draw(pixel, new Rectangle(Bounds.X, Bounds.Y, 1, Bounds.Height), Color.White);
+        spriteBatch.Draw(MyGame.Core.Main.pixel, new Rectangle(Bounds.X, Bounds.Y, 1, Bounds.Height), Color.White);
         // Right
-        spriteBatch.Draw(pixel, new Rectangle(Bounds.Right - 1, Bounds.Y, 1, Bounds.Height), Color.White);
+        spriteBatch.Draw(MyGame.Core.Main.pixel, new Rectangle(Bounds.Right - 1, Bounds.Y, 1, Bounds.Height), Color.White);
 
     }
 }

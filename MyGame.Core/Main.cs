@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework.Graphics;
+
 namespace MyGame.Core;
 
 public class Main : Game
@@ -8,6 +10,8 @@ public class Main : Game
 
 
     public List<GameObject> Objects;
+
+    public static Texture2D pixel;
 
     public readonly static bool IsMobile = OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
     public readonly static bool IsDesktop = OperatingSystem.IsMacOS() || OperatingSystem.IsLinux() || OperatingSystem.IsWindows();
@@ -36,28 +40,39 @@ public class Main : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-
+      
+        pixel = new Texture2D(GraphicsDevice, 1, 1);
+        pixel.SetData([Color.White]);
         Objects = new List<GameObject>()
         {
             new Player(name: "player", position: new Vector2(100, 100))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
-                new Collider(size: new Point(32, 32), offset: new Point(0,32) ),
+                new Collider(size: new Point(32, 32), offset: new Point(0,32) )
             },
-            new GameObject(name: "test1",position: new Vector2(200, 400))
+            new (name: "test1",position: new Vector2(200, 400))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
             },
-            new GameObject(name: "test2" ,position: new Vector2(250, 350))
+            new (name: "test2" ,position: new Vector2(250, 350))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
             },
-            new GameObject(name: "test3" ,position: new Vector2(100, 400))
+            new (name: "test3" ,position: new Vector2(100, 400))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
+            },
+            new (name: "test4" ,position: new Vector2(200, 250))
+            {
+                new Sprite(Content.Load<Texture2D>("Player")),
+                new Collider()
+            },
+            new (name:"floor", position: new Vector2(10, 475))
+            {
+                new Collider(new(700,10),Point.Zero)
             }
         };
         base.LoadContent();
@@ -76,7 +91,7 @@ public class Main : Game
         {
             obj.Update(gameTime);
         }
-        
+
         base.Update(gameTime);
     }
 

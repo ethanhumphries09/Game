@@ -5,7 +5,7 @@ namespace Engine;
 public class GameObject(string name, Vector2 position) : List<Component>
 {
     public Vector2 Position { get; set; } = position;
-    public Vector2 PreviousPosition { get; protected set; }
+    public Vector2 PreviousPosition { get; protected set; } = position;
     public string Name { get; set; } = name;
     public virtual void Update(GameTime gameTime)
     {
