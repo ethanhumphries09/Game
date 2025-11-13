@@ -50,33 +50,42 @@ public class Main : Game
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider(size: new Point(32, 32), offset: new Point(0,32) )
             },
+
             new (name: "test1",position: new Vector2(200, 400))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
             },
+
             new (name: "test2" ,position: new Vector2(250, 350))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
             },
+
             new (name: "test3" ,position: new Vector2(100, 400))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
             },
+
             new (name: "test4" ,position: new Vector2(200, 250))
             {
                 new Sprite(Content.Load<Texture2D>("Player")),
                 new Collider()
             },
+
             new (name:"floor", position: new Vector2(10, 475))
             {
-                new Collider(new(700,10),Point.Zero)
+                new Collider(new(750,10),Point.Zero)
+            },
+
+            new (name:"wall", position: new Vector2(600, 0))
+            {
+                new Collider(new(10,400),Point.Zero)
             }
         };
         base.LoadContent();
-
     }
 
     protected override void Update(GameTime gameTime)
@@ -86,12 +95,10 @@ public class Main : Game
             || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        // TODO: Add your update logic 
         foreach (var obj in Objects)
         {
             obj.Update(gameTime);
         }
-
         base.Update(gameTime);
     }
 

@@ -12,11 +12,12 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
 
     private const float speed = 200;
     private const float acceleration = 10f;
-    private const float jump = 15f;
+    private const float jumpStrength = 15f;
+    private const float dashStrength = 25f;
     private const float gravity = 50f;
     private const float terminalVelocity = 1000f;
 
-    private int maxJumps = 2;
+    private int maxJumps = 1;
     private int jumps;
 
     //private bool canJump;
@@ -185,17 +186,17 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
         if (Velocity.X > 0)
         {
             Velocity.Y = 0;
-            Velocity.X += 30;
+            Velocity.X += dashStrength;
         }
         else if (Velocity.X < 0)
         {
             Velocity.Y = 0;
-            Velocity.X -= 30;
+            Velocity.X -= dashStrength;
         }
     }
     public void Jump()
     {
-        Velocity.Y = -jump;
+        Velocity.Y = -jumpStrength;
         jumps--;
     }
 }
