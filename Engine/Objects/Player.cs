@@ -81,11 +81,15 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        Color color;
+        Color gcolor;
+        Color ccolor;
         base.Draw(spriteBatch);
-        if (Grounded()) color = Color.Blue;
-        else color = Color.Green;
-        spriteBatch.Draw(MyGame.Core.Main.pixel, GroundedBox, color);
+        if (grounded) gcolor = Color.Blue;
+        else gcolor = Color.Green;
+        if (climbing) ccolor = Color.Blue;
+        else ccolor = Color.Green;
+        spriteBatch.Draw(MyGame.Core.Main.pixel, GroundedBox, gcolor);
+        spriteBatch.Draw(MyGame.Core.Main.pixel, ClimbingBox, ccolor);
 
     }
     public override void Update(GameTime gameTime)
@@ -193,6 +197,7 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
 
                         Velocity.X = 0;
                     }
+                    break;
                 }
             }
         }
@@ -221,6 +226,7 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
                         Velocity.Y = 0;
 
                     }
+                    break;
                 }
             }
         }
@@ -249,7 +255,7 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
         }
         else
         {
-            Velocity.Y = -jumpStrengthd;
+            Velocity.Y = -jumpStrength;
             Velocity.X = -10;
             jumps = 1;
         }
