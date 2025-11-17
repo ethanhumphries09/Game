@@ -7,3 +7,4 @@ global using Microsoft.Xna.Framework.Input;
 global using Engine;
 global using Engine.Components;
 global using Engine.Physics;
+global using Engine.Misc;

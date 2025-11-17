@@ -13,11 +13,11 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
     private const float speed = 200;
     private const float acceleration = 10f;
     private const float jumpStrength = 15f;
-    private const float dashStrength = 25f;
+    private const float dashStrength = 30f;
     private const float gravity = 50f;
     private const float terminalVelocity = 1000f;
 
-    private int maxJumps = 1;
+    private int maxJumps = 2;
     private int jumps;
 
     //private bool canJump;
@@ -25,8 +25,36 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
     private Collider Collider => GetComponent<Collider>();
     private Rectangle PreviousBounds = Rectangle.Empty;
     private Rectangle GroundedBox;
+    private Rectangle ClimbingBox;
 
-    public bool Grounded()
+    private Timer dashTimer = new(1);
+
+    private bool grounded;
+    private bool climbing;
+
+    private bool CheckClimbing()
+    {
+        if (!grounded)
+        {
+            ClimbingBox = new Rectangle(
+                Collider.Bounds.X - 1,
+                Collider.Bounds.Y,
+                Collider.Bounds.Width + 2,
+                1
+            );
+            foreach (var collider in Collision.Colliders)
+            {
+                if (collider != Collider && ClimbingBox.Intersects(collider.Bounds))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public bool CheckGrounded()
     {
         GroundedBox = new Rectangle(
             Collider.Bounds.X,
@@ -49,6 +77,7 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
 
         base.Draw(spriteBatch);
         spriteBatch.Draw(MyGame.Core.Main.pixel, GroundedBox, Color.Blue);
+        spriteBatch.Draw(MyGame.Core.Main.pixel, ClimbingBox, Color.Blue);
 
     }
     public override void Update(GameTime gameTime)
@@ -56,6 +85,10 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
         base.Update(gameTime);
         kbp = kb;
         kb = Keyboard.GetState();
+
+        dashTimer.Update(gameTime);
+        grounded = CheckGrounded();
+        climbing = CheckClimbing();
 
         PreviousBounds = Collider.Bounds;
         Move(gameTime);
@@ -79,7 +112,7 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
         Velocity.X = MathHelper.Lerp(Velocity.X, targetSpeed, acceleration * delta);
 
         //not grounded
-        if (!Grounded())
+        if (!grounded)
         {
             if (Velocity.Y < terminalVelocity * delta)
             {
@@ -90,7 +123,7 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
                 Velocity.Y = terminalVelocity * delta;
             }
 
-            if(jumps == maxJumps)
+            if (jumps == maxJumps)
             {
                 jumps--;
             }
@@ -102,8 +135,13 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
             jumps = maxJumps;
         }
 
+        if(climbing)
+        {
+            Velocity.Y = 50 * delta;
+        }
+
         //jump
-        if (jumps >= 1 && kb.IsKeyDown(Keys.Space) && !kbp.IsKeyDown(Keys.Space))
+        if ((climbing || jumps >= 1) && kb.IsKeyDown(Keys.Space) && !kbp.IsKeyDown(Keys.Space))
         {
             Jump();
         }
@@ -133,21 +171,19 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
                 if (Collider.Bounds.Intersects(collider2.Bounds))
                 {
                     //right side
-                    if (PreviousBounds.Left >= collider2.Bounds.Right)
-                    {
-                        Position = new(collider2.Bounds.Right, Position.Y);
-
-                        Velocity.X = 0;
-
-                    }
-                    //left side
-                    else if (PreviousBounds.Right <= collider2.Bounds.Left)
+                    if (PreviousBounds.Right <= collider2.Bounds.Left)
                     {
 
                         Position = new(collider2.Bounds.Left - Collider.Bounds.Width, Position.Y);
 
                         Velocity.X = 0;
+                    }
+                    //left
+                    else if (PreviousBounds.Left >= collider2.Bounds.Right)
+                    {
+                        Position = new(collider2.Bounds.Right, Position.Y);
 
+                        Velocity.X = 0;
                     }
                 }
             }
@@ -183,21 +219,34 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
     }
     public void Dash()
     {
-        if (Velocity.X > 0)
+        if (dashTimer.Completed() && Velocity.X > 0)
         {
             Velocity.Y = 0;
-            Velocity.X += dashStrength;
+            Velocity.X = dashStrength;
+            dashTimer.Start();
         }
-        else if (Velocity.X < 0)
+        else if (dashTimer.Completed() && Velocity.X < 0)
         {
             Velocity.Y = 0;
-            Velocity.X -= dashStrength;
+            Velocity.X = -dashStrength;
+            dashTimer.Start();
         }
     }
     public void Jump()
     {
-        Velocity.Y = -jumpStrength;
-        jumps--;
+        if (!climbing)
+        {
+            Velocity.Y = -jumpStrength;
+            jumps--;
+        }
+        else
+        {
+            Velocity.Y = -jumpStrengthd;
+            Velocity.X = -10;
+            jumps = 1;
+        }
     }
 }
+
+
 
