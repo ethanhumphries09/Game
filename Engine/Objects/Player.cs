@@ -11,7 +11,9 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
     private Vector2 Velocity = Vector2.Zero;
 
     private const float speed = 200;
-    private const float acceleration = 10f;
+    private const float acceleration = 5f;
+    private const float deceleration = 10f;
+
     private const float jumpStrength = 15f;
     private const float dashStrength = 30f;
     private const float gravity = 50f;
@@ -19,6 +21,11 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
 
     private int maxJumps = 2;
     private int jumps;
+
+    private float targetSpeed = 0;
+
+    bool left => kb.IsKeyDown(Keys.A);
+    bool right => kb.IsKeyDown(Keys.D);
 
     //private bool canJump;
 
@@ -74,10 +81,11 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-
+        Color color;
         base.Draw(spriteBatch);
-        spriteBatch.Draw(MyGame.Core.Main.pixel, GroundedBox, Color.Blue);
-        spriteBatch.Draw(MyGame.Core.Main.pixel, ClimbingBox, Color.Blue);
+        if (Grounded()) color = Color.Blue;
+        else color = Color.Green;
+        spriteBatch.Draw(MyGame.Core.Main.pixel, GroundedBox, color);
 
     }
     public override void Update(GameTime gameTime)
@@ -99,17 +107,17 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
         float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 
-        float targetSpeed = 0f;
+        targetSpeed = 0f;
 
-        bool left = kb.IsKeyDown(Keys.A);
-        bool right = kb.IsKeyDown(Keys.D);
 
         if (left && !right)
             targetSpeed = -speed * delta;
         else if (right && !left)
             targetSpeed = speed * delta;
-
-        Velocity.X = MathHelper.Lerp(Velocity.X, targetSpeed, acceleration * delta);
+        if (targetSpeed == 0f)
+            Velocity.X = MathHelper.Lerp(Velocity.X, targetSpeed, deceleration * delta);
+        else
+            Velocity.X = MathHelper.Lerp(Velocity.X, targetSpeed, acceleration * delta);
 
         //not grounded
         if (!grounded)
@@ -219,13 +227,13 @@ public class Player(string name, Vector2 position) : GameObject(name, position)
     }
     public void Dash()
     {
-        if (dashTimer.Completed() && Velocity.X > 0)
+        if (right)
         {
             Velocity.Y = 0;
             Velocity.X = dashStrength;
             dashTimer.Start();
         }
-        else if (dashTimer.Completed() && Velocity.X < 0)
+        if (left)
         {
             Velocity.Y = 0;
             Velocity.X = -dashStrength;
